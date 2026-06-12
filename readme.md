@@ -13,8 +13,8 @@ pip install oklab
 ```python
 import oklab
 
-oklab.lch_to_hex((0.75, 0.125, 300))
+oklab.lch_to_hex((0.75, 0.125, 300.0))
 # '#cdb7f3'
 ```
 
-\- daa
+
