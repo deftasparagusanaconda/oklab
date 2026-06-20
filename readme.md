@@ -50,7 +50,7 @@ oklab.lab_to_xyz((1.0, 0.0, 0.0))
 
 here is a graph of the atomic conversions:
 
-![graph of formats and conversions](https://github.com/deftasparagusanaconda/oklab/blob/main/formats.png)
+![graph of formats and conversions](https://github.com/deftasparagusanaconda/oklab/blob/main/graph.png)
 
 - lab: oklab cartesian space
 - lch: oklch cylindrical space
