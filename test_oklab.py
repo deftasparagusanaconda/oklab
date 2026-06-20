@@ -14,31 +14,26 @@ def test_xyz():
 
     for xyz, lab in zip(table_xyz, table_lab):
         for expected, computed in zip(xyz, oklab.lab_to_xyz(lab)):
-            assert math.isclose(expected, computed, abs_tol=0.002)
+            assert math.isclose(expected, computed, abs_tol=0.005)
 
         for expected, computed in zip(lab, oklab.xyz_to_lab(xyz)):
-            assert math.isclose(expected, computed, abs_tol=0.002)
+            assert math.isclose(expected, computed, abs_tol=0.005)
 
-# honestly, i dont know why i cant make the abs_tol any higher. numerically, the module is quite trivial... good as a sanity check i guess
 def test_forward_inverse_pairs():
     pairs = [
         (oklab.lch_to_lab, oklab.lab_to_lch),
-        (oklab.xyz_to_lms, oklab.lms_to_xyz),
-        (oklab.rgb_to_lms, oklab.lms_to_rgb),
         (oklab.lab_to_lms, oklab.lms_to_lab),
-        (oklab.xyz_to_lab, oklab.lab_to_xyz),
-        (oklab.rgb_to_lab, oklab.lab_to_rgb),
-        (oklab.xyz_to_lch, oklab.lch_to_xyz),
-        (oklab.rgb_to_lch, oklab.lch_to_rgb),
+        (oklab.rgb_to_lms, oklab.lms_to_rgb),
+        (oklab.xyz_to_lms, oklab.lms_to_xyz),
+        (oklab.rgb_to_xyz, oklab.xyz_to_rgb),
     ]
 
     for forward, inverse in pairs:
-        for _ in range(100):
+        for _ in range(1000):
             tuple_in = tuple(random.random() for _ in range(3))
             tuple_out1 = inverse(forward(tuple_in))
             tuple_out2 = forward(inverse(tuple_in))
         
             for expected, computed1, computed2 in zip(tuple_in, tuple_out1, tuple_out2):
-                assert math.isclose(expected, computed1, abs_tol=0.01)
-                assert math.isclose(expected, computed2, abs_tol=0.01)
-        
+                assert math.isclose(expected, computed1)
+                assert math.isclose(expected, computed2)

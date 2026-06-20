@@ -1,10 +1,35 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ['hatchling']
+build-backend = 'hatchling.build'
 
 [project]
-name = "oklab"
-version = "0.1.0"
+name = 'oklab'
+version = '0.1.0'
+description = "lightweight python implementation of Björn Ottosson's oklab colour space"
+readme = 'readme.md'
+license = 'MIT'
+authors = [
+    { name = 'deftasparagusanaconda' }
+]
+keywords = [
+    'color',
+    'colour',
+    'oklab',
+	'oklch',
+]
+dependencies = []
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Graphics",
+]
 
 [tool.hatch.build.targets.wheel]
 include = ["oklab.py"]
+
+[project.urls]
+Homepage = 'https://github.com/deftasparagusanaconda/oklab'
+Repository = 'https://github.com/deftasparagusanaconda/oklab'
+Issues = 'https://github.com/deftasparagusanaconda/oklab/issues'
