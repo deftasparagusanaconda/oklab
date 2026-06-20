@@ -12,6 +12,8 @@ python -m pip install oklab
 
 # how to use?
 
+use it in python:
+
 ```python
 import oklab
 
@@ -25,6 +27,19 @@ oklab.lab_to_xyz((1.0, 0.0, 0.0))
 # (0.9504559270516719, 0.9999999999999998, 1.0890577507598782)
 ```
 
+or use it in the terminal:
+
+```shell
+> oklab -i lch -o hex 0.75 0.125 310
+#c697e9
+
+> oklch ff0000
+(0.6279536182521783 0.25762679148825324 29.227131291763712)
+
+> oklab -i lab -o xyz 1.0 0.0 0.0
+(0.9504559270516719, 0.9999999999999998, 1.0890577507598782)
+```
+
 # features
 
 - [x] 6 formats: `rgb`, `hex`, `lab`, `lch`, `xyz`, `lms`
@@ -32,10 +47,11 @@ oklab.lab_to_xyz((1.0, 0.0, 0.0))
 - [x] numerical accuracy + roundtrip precision
 - [x] source correctness
 - [x] zero dependencies
+- [x] CLI tool
 - [ ] python 3.8–3.14 compatibility
 - [ ] clamping (in native oklab space via chroma reduction)
-- [ ] configurable RGB primaries (P3, rec2020, …)
-- ❌ CMYK support (scope creep)
+- [ ] configurable RGB primaries (P3, rec2020, …)  
+❌ CMYK support (scope creep)  
 
 # sources
 
