@@ -4,17 +4,9 @@
 
 import math
 
-def matvec(matrix, vector):
+def _matvec(matrix, vector):
     'matrix × vector'
-    return tuple(math.sumprod(row, vector) for row in matrix)
-
-def root(a, b):
-    'a ** (1 / b)'
-
-    # this is proven (from daamath) to be bad
-    #return math.exp(math.log(a) / b)
-
-    return a ** (1 / b)
+    return tuple(sum(a * b for a, b in zip(row, vector)) for row in matrix)
 
 # mysterious numbers from https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-945714988
 M0     = ((+0.77849780, +0.34399940, -0.12249720),
@@ -43,19 +35,19 @@ M1_inv = ((+1.2268798758459243 , -0.5578149944602171, +0.2813910456659647 ),
 
 def xyz_to_lms(xyz):
     'convert (x, y, z) to (l, m, s)'
-    return matvec(M1, xyz)
+    return _matvec(M1, xyz)
 
 def lms_to_xyz(lms):
     'convert (l, m, s) to (x, y ,z)'
-    return matvec(M1_inv, lms)
+    return _matvec(M1_inv, lms)
 
 def lms_to_lab(lms):
     'convert (l, m, s) to (l, a, b)'
-    return matvec(M2, tuple(math.cbrt(cone) for cone in lms))
+    return _matvec(M2, tuple(cone ** (1 / 3) for cone in lms))
 
 def lab_to_lms(lab):
     'convert (l, a, b) to (l, m, s)'
-    return tuple(cone ** 3 for cone in matvec(M2_inv, lab))
+    return tuple(cone ** 3 for cone in _matvec(M2_inv, lab))
 
 # extra ------------------------------------------------------------------------
 
@@ -78,12 +70,12 @@ def lab_to_lch(lab, *, degrees: bool = True):
     h = math.degrees(h) if degrees else h
     return l, c, h
 
-def rgb_to_hex(rgb: tuple[float, float, float]) -> str:
+def rgb_to_hex(rgb: tuple) -> str:
     "convert (r, g, b) to '#rrggbb' (rounding to 8 bits)"
     #return '#' + ''.join(f'{round(channel * 255):02x}' for channel in rgb)
     return f'#{round(rgb[0] * 255):02x}{round(rgb[1] * 255):02x}{round(rgb[2] * 255):02x}'
 
-def hex_to_rgb(hex: str) -> tuple[float, float, float]:
+def hex_to_rgb(hex: str) -> tuple:
     "convert '#rrggbb' to (r, g, b)"
     return tuple(int(hex.lstrip('#')[i:i+2], base=16) / 255 for i in (0, 2, 4))
 
@@ -103,15 +95,15 @@ def eotf_srgb(x, *, A = 12.92, C = 0.055, γ = 2.4, X = 0.04045):
 
 def oetf_srgb(y, *, A = 12.92, C = 0.055, γ = 2.4, Y = 0.0031308):
     'convert linear sRGB to gamma-encoded sRGB'
-    return y * A if y <= Y else math.fma(1 + C, root(y, γ), -C)
+    return y * A if y <= Y else (1 + C) * y ** (1 / γ) - C
 
 def rgb_to_xyz(rgb):
     'convert (r, g, b) in sRGB to (x, y, z)'
-    return matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)))
+    return _matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)))
 
 def xyz_to_rgb(xyz):
     'convert (x, y, z) to (r, g, b) in sRGB'
-    return tuple(map(oetf_srgb, matvec(XYZ_TO_RGB, xyz)))
+    return tuple(map(oetf_srgb, _matvec(XYZ_TO_RGB, xyz)))
 
 # numpy.matmul(M1, _RGB_TO_XYZ)
 RGB_TO_LMS = ((+0.4121764591770371  , +0.536273974269589  , +0.05144037229550145),
@@ -125,11 +117,11 @@ LMS_TO_RGB = ((+4.077186823717315   , -3.307622521664363  , +0.2308591954879519 
 
 def rgb_to_lms(rgb):
     'convert (r, g, b) in sRGB to (l, m, s)'
-    return matvec(RGB_TO_LMS, tuple(map(eotf_srgb, rgb)))
+    return _matvec(RGB_TO_LMS, tuple(map(eotf_srgb, rgb)))
 
 def lms_to_rgb(lms):
     'convert (l, m, s) to (r, g, b) in sRGB'
-    return tuple(map(oetf_srgb, matvec(LMS_TO_RGB, lms)))
+    return tuple(map(oetf_srgb, _matvec(LMS_TO_RGB, lms)))
 
 # conveniences -----------------------------------------------------------------
 
