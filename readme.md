@@ -2,6 +2,8 @@ lightweight python implementation of [Björn Ottosson](https://bottosson.github.
 
 i like oklab but there isnt a straightforward python package for working with it. so i made it.
 
+![gamut demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut demo.png>)
+
 # install
 
 install it from [PyPI](https://pypi.org/project/oklab/):
@@ -40,6 +42,27 @@ or use it in the terminal:
 (0.9504559270516719, 0.9999999999999998, 1.0890577507598782)
 ```
 
+try this fancy demo!
+
+```python
+import os, oklab
+C, R = os.get_terminal_size()
+for row in range(R - 1, -1, -1):
+    string = []
+    for col in range(C):
+        l = row / (R - 1) * 0.85 + 0.15
+        c = 0.125
+        h = col / (C - 1) * 360
+        colour = oklab.lch_to_rgb((l, c, h))
+        if not all(0 < c < 1 for c in colour):
+			# out of gamut
+            string.append(f' ')
+            continue
+        r, g, b = tuple(round(c * 255) for c in colour)
+        string.append(f'\x1b[38;2;{r};{g};{b}m█')
+    print(''.join(string))
+```
+
 # features
 
 - ✅ 6 formats: `rgb`, `hex`, `lab`, `lch`, `xyz`, `lms`
@@ -51,7 +74,7 @@ or use it in the terminal:
 - ✅ python ≥3.8 compatibility
 - 🚧 clamping (in native oklab space via chroma reduction)
 - 🚧 configurable RGB primaries (P3, rec2020, …)  
-- ❌ CMYK support (scope creep)  
+- ❌ CMYK support (scope creep w/non-RGB spaces) 
 
 # sources
 
