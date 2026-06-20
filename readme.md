@@ -32,9 +32,10 @@ oklab.lab_to_xyz((1.0, 0.0, 0.0))
 - [x] numerical accuracy + roundtrip precision
 - [x] source correctness
 - [x] zero dependencies
+- [ ] python 3.8–3.14 compatibility
 - [ ] clamping (in native oklab space via chroma reduction)
 - [ ] configurable RGB primaries (P3, rec2020, …)
-- [❌] CMYK support (scope creep)
+- ❌ CMYK support (scope creep)
 
 # sources
 
@@ -44,7 +45,7 @@ oklab.lab_to_xyz((1.0, 0.0, 0.0))
 - `M2_inv` sourced from [Björn's blogpost](https://bottosson.github.io/posts/oklab/)
 - `XYZ_TO_RGB`, `RGB_TO_XYZ` sourced from [colour science](https://www.colour-science.org/)
 - `M1`, `M1_inv`, `M2`, `RGB_TO_LMS`, `LMS_TO_RGB` derived numerically using [numpy](https://github.com/numpy/numpy)
-- tests sourced from [Björn's blogpost](https://bottosson.github.io/posts/oklab/)
+- `test_oklab.test_xyz` sourced from [Björn's blogpost](https://bottosson.github.io/posts/oklab/)
 
 # conversion graph
 
