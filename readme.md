@@ -42,16 +42,16 @@ or use it in the terminal:
 
 # features
 
-- [x] 6 formats: `rgb`, `hex`, `lab`, `lch`, `xyz`, `lms`
-- [x] 30 conversion functions (complete graph)
-- [x] numerical accuracy + roundtrip precision
-- [x] source correctness
-- [x] zero dependencies
-- [x] CLI tool
-- [ ] python 3.8–3.14 compatibility
-- [ ] clamping (in native oklab space via chroma reduction)
-- [ ] configurable RGB primaries (P3, rec2020, …)  
-❌ CMYK support (scope creep)  
+- ✅ 6 formats: `rgb`, `hex`, `lab`, `lch`, `xyz`, `lms`
+- ✅ 30 conversion functions (complete graph)
+- ✅ numerical accuracy + roundtrip correctness
+- ✅ source correctness
+- ✅ zero dependencies
+- ✅ CLI tool
+- ✅ python ≥3.8 compatibility
+- 🚧 clamping (in native oklab space via chroma reduction)
+- 🚧 configurable RGB primaries (P3, rec2020, …)  
+- ❌ CMYK support (scope creep)  
 
 # sources
 
