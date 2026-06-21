@@ -15,9 +15,9 @@ for y in range(H):
         c = 0.125
         colour = oklab.lch_to_rgb((l, c, h))
         if not all(0 <= v <= 1 for v in colour):
-            img.putpixel((x, y), (0, 0, 0))   # out-of-gamut → black
+            img.putpixel((x, y), (255, 255, 255))   # out-of-gamut → black
             continue
         r, g, b = (round(v * 255) for v in colour)
         img.putpixel((x, y), (r, g, b))
 
-img.save('gamut demo.png', optimize=True)
+img.save('gamut fixed chroma demo.png', optimize=True)

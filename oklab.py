@@ -70,25 +70,67 @@ def lab_to_lch(lab, *, degrees: bool = True):
     h = math.degrees(h) if degrees else h
     return l, c, h
 
-def clamp_LCh(lab):
+def _clamp_chroma_reduction(lab):
     'clamp (l, a, b) into valid sRGB gamut by simply reducing the chroma. results in unoptimal yellows, and such'
 
-def clamp_optimal(lab):
+def _clamp_optimal(lab):
     'clamp (l, a, b) into valid sRGB gamut by clamping to the nearest point. result is discontinuous iff the gamut is concave (a fact of topology)'
 
-def clamp_centred(rgb, centre = (0.0, 0.0, 0.0)):
-    'clamp (r, g, b) into valid sRGB gamut by reducing the euclidean distance to centre in lab space. centre is assumed to be inside gamut. if (r, g, b) is outside gamut, the output will be the intersection of the gamut hull and the ray from '
+def _clamp_point_projection(lab, centre = (0.5, 0.0, 0.0)):
+    """clamp (l, a, b) into gamut by reducing the euclidean distance to centre in oklab space. the output will be the intersection of the gamut hull and the ray from centre to lab
+
+    assumptions
+    -----------
+    - centre is inside gamut
+    - lab is outside gamut
+    - all rays from centre have exactly one unique intersection with the hull
+    """
     
-    if all(0.0 <= channel <= 1.0 for channel in rgb):
-        return rgb
+    diff = tuple(a - b for a, b in zip(lab, centre))
+    point = lambda t: tuple(a + b * t for a, b in zip(centre, diff))
+    t_interior = 0.0
+    t_exterior = 1.0
+    iter_count = 0
     
-    return lab_to_rgb(intersect_hull_ray(HULL_OKLAB, centre_lab, rgb_to_lab(rgb)))
+    # find t numerically by bisecting optimization
+    # we'll use this for now until we find a way to analytically intersect the hull and the ray.
+    while True:
+        t_mean = (t_interior + t_exterior) / 2
+        
+        if all(0.0 <= channel <= 1.0 for channel in lab_to_rgb(point(t_mean))):
+            # inside gamut
+            t_interior = t_mean
+        else:
+            # outside gamut
+            t_exterior = t_mean
+        
+        if math.isclose(t_interior, t_exterior, abs_tol=1e-9):
+            break
+        
+        if (iter_count := iter_count + 1) > 100:
+            print(f'stopped clamping at {iter_count} iterations')
+            break
+    
+    assert 0.0 < t_mean < 1.0
+    
+    return point(t_interior)
+    
+    # the better algorithm wouldve been to represent the hull as six parameterized surfaces, and intersect the ray with them. 
+    # the surfaces are simply (r|g|b)(lab) = (0|1)
+
+def clamp(*args, algorithm = 'point projection', **kwargs):
+    if algorithm == 'point projection':
+        return _clamp_point_projection(*args, **kwargs)
 
 def rgb_to_hex(rgb: tuple) -> str:
-    "convert (r, g, b) to '#rrggbb' (rounding to 8 bits)"
+    "convert (r, g, b) to '#rrggbb'"
+    if not all(0.0 <= channel <= 1.0 for channel in rgb):
+        raise ValueError(f"{rgb=} is out of gamut (violates 0 ≤ x ≤ 1). try rgb_to_hex(clamp(rgb))")
+    
     r = round(rgb[0] * 0xFF)
     g = round(rgb[1] * 0xFF)
     b = round(rgb[2] * 0xFF)
+
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def hex_to_rgb(hex: str) -> tuple:
@@ -117,13 +159,13 @@ def oetf_srgb(y, *, A = 12.92, C = 0.055, γ = 2.4, Y = 0.0031308):
     'convert linear sRGB to gamma-encoded sRGB'
     return y * A if y <= Y else (1 + C) * y ** (1 / γ) - C
 
-def rgb_to_xyz(rgb, *, transfer: bool = True):
+def rgb_to_xyz(rgb):
     'convert (r, g, b) in sRGB to (x, y, z)'
-    return _matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)) if transfer else rgb)
+    return _matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)))
 
-def xyz_to_rgb(xyz, *, transfer: bool = True):
+def xyz_to_rgb(xyz):
     'convert (x, y, z) to (r, g, b) in sRGB'
-    return tuple(map(oetf_srgb, _matvec(XYZ_TO_RGB, xyz))) if transfer else _matvec(XYZ_TO_RGB, xyz)
+    return tuple(map(oetf_srgb, _matvec(XYZ_TO_RGB, xyz)))
 
 # numpy.matmul(M1, _RGB_TO_XYZ)
 RGB_TO_LMS = ((+0.4121764591770371  , +0.536273974269589  , +0.05144037229550145),
@@ -166,4 +208,3 @@ def lab_to_hex(lab): return rgb_to_hex(lms_to_rgb(lab_to_lms(lab)))
 def hex_to_lab(hex): return lms_to_lab(rgb_to_lms(hex_to_rgb(hex)))
 def lch_to_hex(lch): return rgb_to_hex(lms_to_rgb(lab_to_lms(lch_to_lab(lch))))
 def hex_to_lch(hex): return lab_to_lch(lms_to_lab(rgb_to_lms(hex_to_rgb(hex))))
-

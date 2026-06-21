@@ -4,7 +4,7 @@ build-backend = 'hatchling.build'
 
 [project]
 name = 'oklab'
-version = '0.2.1'
+version = '0.3.0'
 description = "lightweight python implementation of Björn Ottosson's oklab colour space"
 readme = 'readme.md'
 license = 'MIT'

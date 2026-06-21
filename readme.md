@@ -2,8 +2,9 @@ lightweight python implementation of [Björn Ottosson](https://bottosson.github.
 
 i like oklab but there isnt a straightforward python package for working with it. so i made it.
 
-![gamut demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut demo.png>)
+![gamut fixed chroma demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut fixed chroma demo.png>)
 ![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut hull demo.png>)
+![gamut clamp demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut clamp demo.png>)
 
 # install
 
@@ -73,8 +74,10 @@ for row in range(R - 1, -1, -1):
 - ✅ zero dependencies
 - ✅ CLI tool
 - ✅ python ≥3.8 compatibility
-- 🚧 clamping (in native oklab space via chroma reduction)
-- 🚧 configurable RGB primaries (P3, rec2020, …)  
+- ✅ sRGB support
+- ✅ clamping with point projection in oklab
+- 🚧 P3 & rec2020 support
+- 🚧 clamping with chroma reduction in oklch
 - ❌ CMYK support (scope creep w/non-RGB spaces) 
 
 # sources
