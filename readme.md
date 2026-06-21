@@ -2,9 +2,9 @@ lightweight python implementation of [Björn Ottosson](https://bottosson.github.
 
 i like oklab but there isnt a straightforward python package for working with it. so i made it.
 
-![gamut fixed chroma demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut fixed chroma demo.png>)
-![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut hull demo.png>)
-![gamut clamp demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut clamp demo.png>)
+![gamut fixed chroma demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut fixed chroma demo.webp>)
+![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut hull demo.webp>)
+![gamut clamp demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut clamp demo.webp>)
 
 # install
 
