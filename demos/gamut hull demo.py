@@ -43,7 +43,7 @@ def rgb_hull_unscaled(n: int):
     yield (n, n, n)
 
 rgbs = list(rgb_hull(0xff))
-labs = list(map(oklab.rgb_to_lab, rgbs))
+labs = list(map(oklab.srgb_to_oklab, rgbs))
 l, a, b = tuple(map(np.array, zip(*labs)))
 
 fig = plt.figure()

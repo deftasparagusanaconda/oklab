@@ -10,12 +10,6 @@ def oetf_prophotorgb(c, *, e = 0.001953125):
 def eotf_prophotorgb(c, *, e = 0.001953125):
     return 16 * c if c <= e else root(c, 1.8)
 
-def oetf_rec2020(c, *, α = 1.0992968268094157, β = 0.018053968510807):
-    return c / 4.5 if abs(c) < β * 4.5 else root((abs(c) + α - 1) / α, 0.45)
-
-def eotf_rec2020(c, *, α = 1.0992968268094157, β = 0.018053968510807):
-    return 4.5 * c if c < β else α * c ** 0.45 - (α - 1)
-
 def oetf_L_star(c, *, k = 24389 / 27):
     return (100 * c) / k if c <= 0.08 else ((c + 0.16) / 1.16) ** 3
 

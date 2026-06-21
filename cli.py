@@ -24,6 +24,6 @@ def oklch_main():
     args = parser.parse_args()
 
     if len(args.colour) == 1:
-        print(*oklab.hex_to_lch(args.colour[0]))
+        print(*oklab.hex_to_oklch(args.colour[0]))
     else:
-        print(oklab.lch_to_hex(tuple(map(float, args.colour))))
+        print(oklab.oklch_to_hex(tuple(map(float, args.colour))))

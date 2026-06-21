@@ -2,9 +2,9 @@ lightweight python implementation of [Björn Ottosson](https://bottosson.github.
 
 i like oklab but there isnt a straightforward python package for working with it. so i made it.
 
-![gamut fixed chroma demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut fixed chroma demo.webp>)
-![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut hull demo.webp>)
-![gamut clamp demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut clamp demo.webp>)
+![gamut fixed chroma demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/demos/gamut fixed chroma demo.webp>)
+![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/demos/gamut hull demo.webp>)
+![gamut clamp demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/demos/gamut clamp demo.webp>)
 
 # install
 
@@ -67,18 +67,22 @@ for row in range(R - 1, -1, -1):
 
 # features
 
-- ✅ 6 formats: `rgb`, `hex`, `lab`, `lch`, `xyz`, `lms`
-- ✅ 30 conversion functions (complete graph)
-- ✅ numerical accuracy + roundtrip correctness
+- ✅ 8 formats: `hex`, `srgb`, `dp3`, `bt2020`, `xyz`, `lms`, `oklab`, `oklch`
+- ✅ 26 conversion functions
+- ✅ numerical correctness + roundtrip precision
 - ✅ source correctness
 - ✅ zero dependencies
-- ✅ CLI tool
+- ✅ CLI convenience tools
 - ✅ python ≥3.8 compatibility
-- ✅ sRGB support
-- ✅ clamping with point projection in oklab
-- 🚧 P3 & rec2020 support
-- 🚧 clamping with chroma reduction in oklch
+- ✅ sRGB, Display P3, ITU-R BT.2020 (Rec. 2020) support
+- ✅ clamping: chroma reduction (default) + point projection
+- 🚧 MINDE clamping
+- 🚧 reference-grade correctness
 - ❌ CMYK support (scope creep w/non-RGB spaces) 
+
+todo:
+
+- give -c --clamp option in CLI tools
 
 # sources
 
@@ -86,8 +90,8 @@ for row in range(R - 1, -1, -1):
 - outputs sanity-checked against [oklch.com](https://oklch.com/) and [wikipedia](https://en.wikipedia.org/wiki/Oklab_color_space)
 - `M0` sourced from [Björn's CSSWG comment](https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-945714988)
 - `M2_inv` sourced from [Björn's blogpost](https://bottosson.github.io/posts/oklab/)
-- `XYZ_TO_RGB`, `RGB_TO_XYZ` sourced from [colour science](https://www.colour-science.org/)
-- `M1`, `M1_inv`, `M2`, `RGB_TO_LMS`, `LMS_TO_RGB` derived numerically using [numpy](https://github.com/numpy/numpy)
+- matrices sourced from [colour science](https://www.colour-science.org/)
+- `M1`, `M1_inv`, `M2`, … derived numerically using [numpy](https://github.com/numpy/numpy)
 - `test_oklab.test_xyz` sourced from [Björn's blogpost](https://bottosson.github.io/posts/oklab/)
 
 # conversion graph
@@ -104,4 +108,3 @@ here is a graph of the atomic conversions:
 - hex: 8-bit sRGB in hexadecimal
 
 all composed conversions are derived via shortest path in this graph
-

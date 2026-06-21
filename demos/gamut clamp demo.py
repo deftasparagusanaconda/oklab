@@ -3,10 +3,7 @@ import oklab
 from matplotlib import pyplot
 
 def sphere(n: int, centre=(0.5, 0.0, 0.0), radius=0.5):
-    """
-    Generate approximately equally-spaced points on a sphere
-    using Fibonacci distribution.
-    """
+    'generate approximately equally-spaced points on a sphere using fibonacci distribution'
 
     φ = (1 + sqrt(5)) / 2
 
@@ -24,11 +21,12 @@ def sphere(n: int, centre=(0.5, 0.0, 0.0), radius=0.5):
             z0 + radius * z,
         )
 
-unclamped = list(sphere(2 ** 16))
-l, a, b = list(zip(*unclamped))
-clamped = list(map(oklab.clamp, unclamped))
-l_, a_, b_ = list(zip(*clamped))
-clamped_rgbs = list(map(oklab.lab_to_rgb, clamped))
+unclamped_labs = list(sphere(2 ** 16))
+unclamped_rgbs = list(map(oklab.lab_to_rgb, unclamped_labs))
+clamped_rgbs = list(map(oklab.clamp, unclamped_rgbs))
+clamped_labs = list(map(oklab.clamp, clamped_rgbs))
+l, a, b = list(zip(*unclamped_labs))
+l_, a_, b_ = list(zip(*clamped_labs))
 
 fig = pyplot.figure()
 ax = fig.add_subplot(projection="3d")
