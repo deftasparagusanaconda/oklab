@@ -20,4 +20,4 @@ for y in range(H):
         r, g, b = (round(v * 255) for v in colour)
         img.putpixel((x, y), (r, g, b))
 
-img.save('gamut demo.png')
+img.save('gamut demo.png', optimize=True)

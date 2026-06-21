@@ -19,19 +19,19 @@ M2_inv = ((+1.0       , +0.3963377774, +0.2158037573),
           (+1.0       , -0.0894841775, -1.2914855480))
 
 # M0 / numpy.outer(numpy.dot(M0, ((3127/3290, 1, (10000-3127-3290)/3290))), (1, 1, 1))
-M1 = ((+0.819022437996703  , +0.3619062600528904, -0.1288737815209879 ),
-      (+0.03298365393238847, +0.9292868615863434, +0.03614466635064236),
-      (+0.04817718935962421, +0.2642395317527308, +0.6335478284694309 ))
+M1     = ((+0.819022437996703   , +0.3619062600528904, -0.1288737815209879  ),
+          (+0.03298365393238847 , +0.9292868615863434, +0.03614466635064236 ),
+          (+0.04817718935962421 , +0.2642395317527308, +0.6335478284694309  ))
 
 # numpy.linalg.inv(M2_inv)
-M2 = ((+0.21045426827458136 , +0.7936177747300267, -0.004072043004608034),
-      (+1.9779985323885083  , -2.428592241936286 , +0.450593709547778   ),
-      (+0.025904042487658187, +0.7827717124269178, -0.808675754914576   ))
+M2     = ((+0.21045426827458136 , +0.7936177747300267, -0.004072043004608034),
+          (+1.9779985323885083  , -2.428592241936286 , +0.450593709547778   ),
+          (+0.025904042487658187, +0.7827717124269178, -0.808675754914576   ))
 
 # numpy.linalg.inv(M1)
-M1_inv = ((+1.2268798758459243 , -0.5578149944602171, +0.2813910456659647 ),
-          (-0.04057574521480085, +1.112286803280317 , -0.07171105806551636),
-          (-0.07637293667466007, -0.4214933324022432, +1.5869240198367816 ))
+M1_inv = ((+1.2268798758459243  , -0.5578149944602171, +0.2813910456659647  ),
+          (-0.04057574521480085 , +1.112286803280317 , -0.07171105806551636 ),
+          (-0.07637293667466007 , -0.4214933324022432, +1.5869240198367816  ))
 
 def xyz_to_lms(xyz):
     'convert (x, y, z) to (l, m, s)'
@@ -70,24 +70,44 @@ def lab_to_lch(lab, *, degrees: bool = True):
     h = math.degrees(h) if degrees else h
     return l, c, h
 
+def clamp_LCh(lab):
+    'clamp (l, a, b) into valid sRGB gamut by simply reducing the chroma. results in unoptimal yellows, and such'
+
+def clamp_optimal(lab):
+    'clamp (l, a, b) into valid sRGB gamut by clamping to the nearest point. result is discontinuous iff the gamut is concave (a fact of topology)'
+
+def clamp_centred(rgb, centre = (0.0, 0.0, 0.0)):
+    'clamp (r, g, b) into valid sRGB gamut by reducing the euclidean distance to centre in lab space. centre is assumed to be inside gamut. if (r, g, b) is outside gamut, the output will be the intersection of the gamut hull and the ray from '
+    
+    if all(0.0 <= channel <= 1.0 for channel in rgb):
+        return rgb
+    
+    return lab_to_rgb(intersect_hull_ray(HULL_OKLAB, centre_lab, rgb_to_lab(rgb)))
+
 def rgb_to_hex(rgb: tuple) -> str:
     "convert (r, g, b) to '#rrggbb' (rounding to 8 bits)"
-    #return '#' + ''.join(f'{round(channel * 255):02x}' for channel in rgb)
-    return f'#{round(rgb[0] * 255):02x}{round(rgb[1] * 255):02x}{round(rgb[2] * 255):02x}'
+    r = round(rgb[0] * 0xFF)
+    g = round(rgb[1] * 0xFF)
+    b = round(rgb[2] * 0xFF)
+    return f'#{r:02x}{g:02x}{b:02x}'
 
 def hex_to_rgb(hex: str) -> tuple:
     "convert '#rrggbb' to (r, g, b)"
-    return tuple(int(hex.lstrip('#')[i:i+2], base=16) / 255 for i in (0, 2, 4))
+    hex = hex.lstrip('#')
+    r = int(hex[0:2], base=0x10)
+    g = int(hex[2:4], base=0x10)
+    b = int(hex[4:6], base=0x10)
+    return r, g, b
 
 # from colour_science: colour.RGB_COLOURSPACES['sRGB']._derived_matrix_RGB_to_XYZ
 RGB_TO_XYZ = ((+0.41239079926595934 , +0.35758433938387796, +0.1804807884018343 ),
-               (+0.2126390058715103  , +0.7151686787677559 , +0.07219231536073371),
-               (+0.019330818715591825, +0.11919477979462595, +0.9505321522496606 ))
+              (+0.2126390058715103  , +0.7151686787677559 , +0.07219231536073371),
+              (+0.019330818715591825, +0.11919477979462595, +0.9505321522496606 ))
 
 # from colour_science: colour.RGB_COLOURSPACES['sRGB']._derived_matrix_XYZ_to_RGB
 XYZ_TO_RGB = ((+3.2409699419045226  , -1.537383177570094  , -0.49861076029300344),
-               (-0.9692436362808798  , +1.8759675015077206 , +0.04155505740717563),
-               (+0.05563007969699364 , -0.20397695888897655, +1.0569715142428786 ))
+              (-0.9692436362808798  , +1.8759675015077206 , +0.04155505740717563),
+              (+0.05563007969699364 , -0.20397695888897655, +1.0569715142428786 ))
 
 def eotf_srgb(x, *, A = 12.92, C = 0.055, γ = 2.4, X = 0.04045):
     'convert gamma-encoded sRGB to linear sRGB'
@@ -97,23 +117,23 @@ def oetf_srgb(y, *, A = 12.92, C = 0.055, γ = 2.4, Y = 0.0031308):
     'convert linear sRGB to gamma-encoded sRGB'
     return y * A if y <= Y else (1 + C) * y ** (1 / γ) - C
 
-def rgb_to_xyz(rgb):
+def rgb_to_xyz(rgb, *, transfer: bool = True):
     'convert (r, g, b) in sRGB to (x, y, z)'
-    return _matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)))
+    return _matvec(RGB_TO_XYZ, tuple(map(eotf_srgb, rgb)) if transfer else rgb)
 
-def xyz_to_rgb(xyz):
+def xyz_to_rgb(xyz, *, transfer: bool = True):
     'convert (x, y, z) to (r, g, b) in sRGB'
-    return tuple(map(oetf_srgb, _matvec(XYZ_TO_RGB, xyz)))
+    return tuple(map(oetf_srgb, _matvec(XYZ_TO_RGB, xyz))) if transfer else _matvec(XYZ_TO_RGB, xyz)
 
 # numpy.matmul(M1, _RGB_TO_XYZ)
 RGB_TO_LMS = ((+0.4121764591770371  , +0.536273974269589  , +0.05144037229550145),
-               (+0.2119091995880486  , +0.680717870982313  , +0.10739984387775395),
-               (+0.08834481407213206 , +0.28185396309857735, +0.6302808688015095 ))
+              (+0.2119091995880486  , +0.680717870982313  , +0.10739984387775395),
+              (+0.08834481407213206 , +0.28185396309857735, +0.6302808688015095 ))
 
 # numpy.matmul(_XYZ_TO_RGB, M1_inv)
 LMS_TO_RGB = ((+4.077186823717315   , -3.307622521664363  , +0.2308591954879519 ),
-               (-1.2685764914005104  , +2.609687114485009  , -0.34115574866072784),
-               (-0.004196542231656323, -0.7033996761010274 , +1.7067960338654136 ))
+              (-1.2685764914005104  , +2.609687114485009  , -0.34115574866072784),
+              (-0.004196542231656323, -0.7033996761010274 , +1.7067960338654136 ))
 
 def rgb_to_lms(rgb):
     'convert (r, g, b) in sRGB to (l, m, s)'
@@ -136,7 +156,7 @@ def hex_to_lms(hex): return rgb_to_lms(hex_to_rgb(hex))
 def lms_to_hex(lms): return rgb_to_hex(lms_to_rgb(lms))
 def xyz_to_hex(xyz): return lms_to_hex(xyz_to_lms(xyz))
 def hex_to_xyz(hex): return lms_to_xyz(hex_to_lms(hex))
-def rgb_to_lab(rgb): return lms_to_lab(rgb_to_lms(rgb))
+def rgb_to_lab(rgb): return lms_to_lab(rgb_to_lms(rgb)) # rgb_encoded --eotf-> rgb_linear --RGB_TO_LMS-> lms --∛-> lms_cbrt --LMS_TO_LAB-> lab
 def lab_to_rgb(lab): return lms_to_rgb(lab_to_lms(lab))
 def rgb_to_lch(rgb): return lab_to_lch(lms_to_lab(rgb_to_lms(rgb)))
 def lch_to_rgb(lch): return lms_to_rgb(lab_to_lms(lch_to_lab(lch)))
@@ -146,3 +166,4 @@ def lab_to_hex(lab): return rgb_to_hex(lms_to_rgb(lab_to_lms(lab)))
 def hex_to_lab(hex): return lms_to_lab(rgb_to_lms(hex_to_rgb(hex)))
 def lch_to_hex(lch): return rgb_to_hex(lms_to_rgb(lab_to_lms(lch_to_lab(lch))))
 def hex_to_lch(hex): return lab_to_lch(lms_to_lab(rgb_to_lms(hex_to_rgb(hex))))
+

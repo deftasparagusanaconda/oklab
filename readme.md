@@ -3,6 +3,7 @@ lightweight python implementation of [Björn Ottosson](https://bottosson.github.
 i like oklab but there isnt a straightforward python package for working with it. so i made it.
 
 ![gamut demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut demo.png>)
+![gamut hull demo](<https://github.com/deftasparagusanaconda/oklab/blob/main/gamut hull demo.png>)
 
 # install
 
